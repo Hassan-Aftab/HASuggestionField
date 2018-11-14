@@ -8,13 +8,25 @@
 
 import UIKit
 
-typealias HASymbol = String
+typealias HASymbol = Character
 
+/// Value contains list of items and other useful attibutes for storing against a symbol
 struct HASuggestionFieldValue {
+    
+    /// Symbol against which items of this `HASuggestionFieldValue` will be suggested 
+    var symbol = HASymbol("")
+    
+    /// attributes applied to word when a suggestion is selected
 	var attributesWhenSelected = [NSAttributedStringKey: Any]()
+    
+    /// list of items shown in dropdown when the attached symbol will be pressed
 	var items = [HASuggestionFieldItem]()
-	var isUnique = false // will detect symbol only first time
-	var setAny = false // any value that starts with given symbol will be treated as correct value
+    
+    /// will detect symbol only first time
+	var isUnique = false
+    
+    /// any value that starts with given symbol will be treated as correct value
+	var setAny = false 
 	
 	fileprivate func containesWord(_ word: String) -> Bool {
 		
@@ -22,7 +34,7 @@ struct HASuggestionFieldValue {
 			if item.replaceDetail && word == item.detail {
 				return true
 			}
-			if word == item.value {
+			if word == item.title {
 				return true
 			}
 		}
@@ -33,7 +45,7 @@ struct HASuggestionFieldValue {
 			if item.replaceDetail && word == item.detail {
 				return item
 			}
-			if word == item.value {
+			if word == item.title {
 				return item
 			}
 		}
@@ -42,34 +54,39 @@ struct HASuggestionFieldValue {
 }
 
 struct HASuggestionFieldItem {
-	var value = ""
+    
+    
+	var title = ""
 	var detail = ""
+    
+    /// if image to be displayed with item in suggestion dropdown
 	var image : UIImage! = UIImage()
+    
+    /// if `image` is nil, suggestion dropdown will try to get image from url
 	var imgURL : String! = ""
-	var formatSecret = "%@"
-	var secret: String!
-	var replaceDetail = false // if true, it will replace written text with detail, if false it will be replaced by value
 	
+    /// if true, it will replace written text with detail, if false it will be replaced by value
+	var replaceDetail = false 
 	
 }
 
 @objc protocol HASuggestionFieldDelegate {
 	func haSuggestionField(_ field: HASuggestionField, didChangeTextfor symbol:String, word: String)
 	@objc optional func haSuggestionField(_ field: HASuggestionField, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
-	@objc optional func haSuggestionField(_ field: HASuggestionField, didEnter Symbol: String)
+	@objc optional func haSuggestionField(_ field: HASuggestionField, didEnter symbol: String)
 }
 
 class HASuggestionField: UITextView {
 
-	var valuesForSymbols = [HASymbol: HASuggestionFieldValue]()
+	private var valuesForSymbols = [HASymbol: HASuggestionFieldValue]()
 	private var suggestionDropDown = HASuggestionDropDown()
 	private var selectedKeyRange = NSRange()
 	
 	private var placeholderText = ""
 	var suggestionDelegate : HASuggestionFieldDelegate?
 	
-	private var keys : [String] {
-		var keys = [String]()
+	private var keys : [HASymbol] {
+		var keys = [HASymbol]()
 		
 		for (key, _) in valuesForSymbols {
 			keys.append(key)
@@ -102,58 +119,45 @@ class HASuggestionField: UITextView {
 		}
 	}
 	
-	
-	
-	var parsedText : String {
-		get {
-			
-			let words = self.text.components(separatedBy: " ")
-			var string = ""
-			
-			for word in words {
-				if let value = valuesForSymbols[String(word.prefix(1))] {
-					
-					
-					var substring = word
-					
-					let wordWithoutSymbol = String(word.dropFirst())
-					
-					if value.containesWord(wordWithoutSymbol), let item = value.getItemForWord(wordWithoutSymbol) {
-						
-						if item.secret != "" {
-							substring = String(format: item.formatSecret, item.secret)
-						}
-						
-					}
-					
-					
-					string += substring
-				}
-				else {
-					string += word
-				}
-				string += " "
-			}
-			
-			return string
-		}
-	}
-	
-	
 	private let placeholderColor = UIColor.lightGray
 	private var placeholderLabel = UILabel()
+    
+    internal override var delegate: UITextViewDelegate? {
+        get {
+            return super.delegate
+        }
+        set {
+            super.delegate = newValue
+        }
+    }
 	
-	
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		self.delegate = self
-		
-		
-		suggestionDropDown.delegate = self
-		
-	}
-	
-	
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        
+        
+        self.delegate = self
+        suggestionDropDown.delegate = self
+    }
+    
+    public func setupWithValues(_ values:[HASuggestionFieldValue]) {
+        for value in values {
+            self.addValue(value)
+        }
+    }
+    
+    public func removeValue(for symbol: HASymbol) {
+        valuesForSymbols[symbol] = nil
+    }
+    
+    func addValue(_ value: HASuggestionFieldValue) {
+        
+        guard !String(value.symbol).isEmpty else {
+            return
+        }
+        
+        valuesForSymbols[value.symbol] = value
+    }
+    
 	private func updatingtWord()-> String {
 		let text = self.attributedText.string as NSString
 		
@@ -189,7 +193,7 @@ class HASuggestionField: UITextView {
 		let attributedString = NSMutableAttributedString()
 		
 		for word in words {
-			if let value = valuesForSymbols[String(word.prefix(1))] {
+			if let value = valuesForSymbols[HASymbol(String(word.prefix(1)))] {
 				
 				let attributeSubString = NSMutableAttributedString(string: word, attributes: value.attributesWhenSelected)
 				if !value.containesWord(String(word.dropFirst())) && !value.setAny {
@@ -223,12 +227,10 @@ class HASuggestionField: UITextView {
 		self.typingAttributes = [String:Any]()
 	}
 	
-	
-	
 }
 
 extension HASuggestionField: UITextViewDelegate {
-	private func textViewDidChange(_ textView: UITextView) {
+	internal func textViewDidChange(_ textView: UITextView) {
 
  		if textView.text.count == 0 && placeholder.count > 0 {
 			placeholderLabel.alpha = 1
@@ -244,17 +246,17 @@ extension HASuggestionField: UITextViewDelegate {
 		
 		let keyToFind = updatingtWord() 
 		
-		var key = ""
+		var key = HASymbol("")
 		
 		for key1 in keys {
-			if keyToFind.hasPrefix(key1) {
+			if keyToFind.hasPrefix(String(key1)) {
 				key = key1
 				break
 			}
 		}
 		
 		
-		if key != "" {
+		if String(key) != "" {
 
 			if let val = valuesForSymbols[key] {
 				
@@ -262,11 +264,9 @@ extension HASuggestionField: UITextViewDelegate {
 					let words = self.text.components(separatedBy: CharacterSet.whitespacesAndNewlines)
 					for word in words {
 						if let value = valuesForSymbols[key] {
-
-							if value.containesWord(String(word.dropFirst(key.count))) {
+							if value.containesWord(String(word.dropFirst(1))) {
 								return
 							}
-							
 						}
 					}
 					
@@ -282,7 +282,7 @@ extension HASuggestionField: UITextViewDelegate {
 				var vals2 = vals
 				
 				vals2 = vals.filter({ (item) -> Bool in
-					return item.value.contains(queryStr)
+					return item.title.contains(queryStr)
 				})
 				
 				suggestionDropDown.symbol = String(key)
@@ -313,7 +313,7 @@ extension HASuggestionField: UITextViewDelegate {
 
 	}
 	
-	private func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+	internal func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
 		return suggestionDelegate?.haSuggestionField?(self, shouldChangeTextIn: range, replacementText: text) ?? true
 	}
 }
@@ -330,7 +330,7 @@ extension HASuggestionField: HASuggestionDropDownDelegate {
 			self.text = str!
 		}
 		else {
-			self.text.replaceSubrange(updatingtWordRange(), with: String(symbol) + item.value)
+			self.text.replaceSubrange(updatingtWordRange(), with: String(symbol) + item.title)
 		}
 		
 		applyAttributes()
@@ -443,7 +443,7 @@ class HASuggestionDropDown: UITableViewController {
 		}
 		cell?.imageView?.layer.cornerRadius = 5
 		
-		let title = symbol + item.value
+		let title = symbol + item.title
 		cell?.textLabel?.text = title
 		cell?.detailTextLabel?.text = item.detail
 		cell?.textLabel?.frame = UIEdgeInsetsInsetRect((cell?.textLabel?.frame)!, UIEdgeInsetsMake(0, 16, 0, 16))
