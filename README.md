@@ -1,7 +1,7 @@
 # HASuggestionField
 HASuggestionField is a iOS suggestion list written in Swift. It suggests list of items provided against any symbol. It allows user to select any of the suggested item from dropdown. Then it applies provided attributes on selected item. 
 Items are also defined by structs. These structs will define each item's properties. 
-![Alt text](https://github.com/Hassan-Aftab/HADropDown/blob/master/Screen%20Shot?raw=true "Demo")
+![Alt text](https://github.com/Hassan-Aftab/HASuggestionField/blob/master/Screen%20Shot?raw=true "Demo")
 
 Simply include HASuggestionField.swift in your project. 
 # Usage
