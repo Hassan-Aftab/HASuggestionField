@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.license      = "GNU General Public License"
 
 
-  s.author             = { "Hassan Aftab" => "Hassan.aftab@coeus-solutions.de" }
+  s.author             = { "Hassan Aftab" => "Hassan.aftab@coeus-solutions.de", :tag => s.version.to_s }
 
   s.source       = { :git => "https://github.com/Hassan-Aftab/HASuggestionField.git", :tag => "master" }
 

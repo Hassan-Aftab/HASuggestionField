@@ -8,10 +8,10 @@
 
 import UIKit
 
-typealias HASymbol = Character
+public typealias HASymbol = Character
 
 /// Value contains list of items and other useful attibutes for storing against a symbol
-struct HASuggestionFieldValue {
+public struct HASuggestionFieldValue {
     
     /// Symbol against which items of this `HASuggestionFieldValue` will be suggested 
     var symbol = HASymbol("")
@@ -53,7 +53,7 @@ struct HASuggestionFieldValue {
     }
 }
 
-struct HASuggestionFieldItem {
+public struct HASuggestionFieldItem {
     
     
     var title = ""
@@ -70,13 +70,13 @@ struct HASuggestionFieldItem {
     
 }
 
-@objc protocol HASuggestionFieldDelegate {
+@objc public protocol HASuggestionFieldDelegate {
     func haSuggestionField(_ field: HASuggestionField, didChangeTextfor symbol:String, word: String)
     @objc optional func haSuggestionField(_ field: HASuggestionField, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
     @objc optional func haSuggestionField(_ field: HASuggestionField, didEnter symbol: String)
 }
 
-class HASuggestionField: UITextView {
+public class HASuggestionField: UITextView {
     
     private var valuesForSymbols = [HASymbol: HASuggestionFieldValue]()
     private var suggestionDropDown = HASuggestionDropDown()
@@ -122,7 +122,7 @@ class HASuggestionField: UITextView {
     private let placeholderColor = UIColor.lightGray
     private var placeholderLabel = UILabel()
     
-    internal override var delegate: UITextViewDelegate? {
+    override public var delegate: UITextViewDelegate? {
         get {
             return super.delegate
         }
@@ -131,7 +131,7 @@ class HASuggestionField: UITextView {
         }
     }
     
-    override func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         super.draw(rect)
         
         
@@ -319,7 +319,7 @@ extension HASuggestionField: UITextViewDelegate {
 }
 
 extension HASuggestionField: HASuggestionDropDownDelegate {
-    internal func haSuggestionDropDown(_ dropDown: HASuggestionDropDown, didSelect item: HASuggestionFieldItem, at index: Int) {
+    public func haSuggestionDropDown(_ dropDown: HASuggestionDropDown, didSelect item: HASuggestionFieldItem, at index: Int) {
         guard let symbol = updatingtWord().first else {
             return
         }
@@ -340,11 +340,11 @@ extension HASuggestionField: HASuggestionDropDownDelegate {
     
 }
 
-protocol HASuggestionDropDownDelegate {
+public protocol HASuggestionDropDownDelegate {
     func haSuggestionDropDown(_ dropDown: HASuggestionDropDown, didSelect item: HASuggestionFieldItem, at index: Int)
 }
 
-class HASuggestionDropDown: UITableViewController {
+public class HASuggestionDropDown: UITableViewController {
     
     var itemHeight : CGFloat = 41.0
     
@@ -369,7 +369,7 @@ class HASuggestionDropDown: UITableViewController {
     
     private var tapGestureBackground: UITapGestureRecognizer!
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
     
@@ -402,7 +402,7 @@ class HASuggestionDropDown: UITableViewController {
     }
     
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
         var cell = tableView.dequeueReusableCell(withIdentifier: "simpleCell")
@@ -450,7 +450,7 @@ class HASuggestionDropDown: UITableViewController {
         return cell!
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
         if delegate != nil {
@@ -460,7 +460,7 @@ class HASuggestionDropDown: UITableViewController {
         
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    override public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return itemHeight
     }
     
@@ -546,7 +546,7 @@ extension UIResponder {
 
 
 extension HASuggestionDropDown: UINavigationControllerDelegate {
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+    private func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         collapseTableView()
     }
     
