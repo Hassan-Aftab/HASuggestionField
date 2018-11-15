@@ -3,7 +3,11 @@ HASuggestionField is a iOS suggestion list written in Swift. It suggests list of
 Items are also defined by structs. These structs will define each item's properties. 
 ![Alt text](https://github.com/Hassan-Aftab/HASuggestionField/blob/master/Screen%20Shot.png?raw=true "Demo")
 
-Simply include HASuggestionField.swift in your project. 
+Simply include HASuggestionField.swift in your project or if you prefer cocoapods
+
+```
+    pod 'HASuggestionField', '0.0.5'
+```
 # Usage
 
 Create a HASuggestionField in IB or in code (using UIView's init methods). Then add values for suggestion field, for example:
