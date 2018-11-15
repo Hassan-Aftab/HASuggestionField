@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
 
   s.swift_version = '4.0'
   s.name         = "HASuggestionField"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "HASuggestionField is a iOS suggestion list written in Swift. It suggests list of items provided against any symbol. It allows user to select any of the suggested item from dropdown. Then it applies provided attributes on selected item. Items are also defined by structs. These structs will define each item's properties."
 
   s.ios.deployment_target = '8.0'
