@@ -14,19 +14,19 @@ public typealias HASymbol = Character
 public struct HASuggestionFieldValue {
     
     /// Symbol against which items of this `HASuggestionFieldValue` will be suggested 
-    var symbol = HASymbol("")
+    public var symbol = HASymbol("")
     
     /// attributes applied to word when a suggestion is selected
-    var attributesWhenSelected = [NSAttributedStringKey: Any]()
+    public var attributesWhenSelected = [NSAttributedStringKey: Any]()
     
     /// list of items shown in dropdown when the attached symbol will be pressed
-    var items = [HASuggestionFieldItem]()
+    public var items = [HASuggestionFieldItem]()
     
     /// will detect symbol only first time
-    var isUnique = false
+    public var isUnique = false
     
     /// any value that starts with given symbol will be treated as correct value
-    var setAny = false 
+    public var setAny = false 
     
     fileprivate func containesWord(_ word: String) -> Bool {
         
@@ -51,23 +51,37 @@ public struct HASuggestionFieldValue {
         }
         return nil
     }
+    public init(symbol: HASymbol, attributesWhenSelected: [NSAttributedStringKey: Any]! = [:], items: [HASuggestionFieldItem]! = [], isUnique: Bool = false, setAny: Bool = false) {
+        self.symbol = symbol
+        self.attributesWhenSelected = attributesWhenSelected ?? [:]
+        self.items = items
+        self.isUnique = isUnique
+        self.setAny = setAny
+    }
 }
 
 public struct HASuggestionFieldItem {
     
     
-    var title = ""
-    var detail = ""
+    public var title = ""
+    public var detail = ""
     
     /// if image to be displayed with item in suggestion dropdown
-    var image : UIImage! = UIImage()
+    public var image : UIImage! = UIImage()
     
     /// if `image` is nil, suggestion dropdown will try to get image from url
-    var imgURL : String! = ""
+    public var imgURL : String! = ""
     
     /// if true, it will replace written text with detail, if false it will be replaced by value
-    var replaceDetail = false 
+    public var replaceDetail = false 
     
+    public init(title: String = "", detail: String = "", image: UIImage! = nil, imgURL: String! = nil, replaceDetail: Bool = false) {
+        self.title = title
+        self.detail = detail
+        self.image = image
+        self.imgURL = imgURL
+        self.replaceDetail = replaceDetail
+    }
 }
 
 @objc public protocol HASuggestionFieldDelegate {

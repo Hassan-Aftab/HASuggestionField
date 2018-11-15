@@ -20,14 +20,14 @@ class ViewController: UIViewController {
 
     func setupSuggestionFieldData() {
         let usersValue = HASuggestionFieldValue
-            .init(symbol: HASymbol("@"),
+            .init(symbol: Character("@"),
                   attributesWhenSelected: [NSAttributedString.Key.foregroundColor: UIColor.blue], 
                   items: getSomeUsers(), 
                   isUnique: false, 
                   setAny: false)
         
         let tagsValue = HASuggestionFieldValue
-            .init(symbol: HASymbol("#"), 
+            .init(symbol: Character("#"), 
                   attributesWhenSelected: [NSAttributedString.Key.backgroundColor : UIColor.lightGray], 
                   items: getSomeHastags(), 
                   isUnique: false, 
